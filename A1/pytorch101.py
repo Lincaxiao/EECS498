@@ -26,8 +26,9 @@ def create_sample_tensor() -> Tensor:
     ##########################################################################
     #                     TODO: Implement this function                      #
     ##########################################################################
-    # Replace "pass" statement with your code
-    pass
+    x = torch.zeros(3, 2) # 创建一个由0填充的3*2的张量
+    x[0, 1] = 10
+    x[1, 0] = 100
     ###########################################################################
     #                            END OF YOUR CODE                             #
     ###########################################################################
@@ -38,31 +39,29 @@ def mutate_tensor(
     x: Tensor, indices: List[Tuple[int, int]], values: List[float]
 ) -> Tensor:
     """
-    Mutate the tensor x according to indices and values. Specifically, indices
-    is a list [(i0, j0), (i1, j1), ... ] of integer indices, and values is a
-    list [v0, v1, ...] of values. This function should mutate x by setting:
+    根据索引和数值修改张量 x。具体来说, indices 是一个整数索引的列表 [(i0, j0), (i1, j1), ...], 
+    values 是一个数值的列表 [v0, v1, ...]。这个函数应该通过以下方式修改 x: 
 
     x[i0, j0] = v0
     x[i1, j1] = v1
+    依此类推。
 
-    and so on.
+    如果同一个索引对在 indices 中出现多次, 你应该将 x 设置为最后一个值。
 
-    If the same index pair appears multiple times in indices, you should set x
-    to the last one.
+    参数:
+        x: 形状为 (H, W) 的张量
+        indices: 包含 N 个元组 [(i0, j0), (i1, j1), ..., ] 的列表
+        values: 包含 N 个数值 [v0, v1, ...] 的列表
 
-    Args:
-        x: A Tensor of shape (H, W)
-        indices: A list of N tuples [(i0, j0), (i1, j1), ..., ]
-        values: A list of N values [v0, v1, ...]
-
-    Returns:
-        The input tensor x
+    返回:
+        输入的张量 x
     """
     ##########################################################################
     #                     TODO: Implement this function                      #
     ##########################################################################
-    # Replace "pass" statement with your code
-    pass
+    length = len(indices)
+    for i in range(length):
+        x[indices[i]] = values[i]
     ##########################################################################
     #                            END OF YOUR CODE                            #
     ##########################################################################
@@ -71,27 +70,27 @@ def mutate_tensor(
 
 def count_tensor_elements(x: Tensor) -> int:
     """
-    Count the number of scalar elements in a tensor x.
+    计算张量 x 中标量元素的数量。
 
-    For example, a tensor of shape (10,) has 10 elements; a tensor of shape
-    (3, 4) has 12 elements; a tensor of shape (2, 3, 4) has 24 elements, etc.
+    例如，形状为 (10,) 的张量有 10 个元素；形状为 (3, 4) 的张量有 12 个元素；
+    形状为 (2, 3, 4) 的张量有 24 个元素，等等。
 
-    You may not use the functions torch.numel or x.numel. The input tensor
-    should not be modified.
+    你不能使用 torch.numel 或 x.numel 函数。输入的张量不应被修改。
 
-    Args:
-        x: A tensor of any shape
+    参数:
+        x: 任意形状的张量
 
-    Returns:
-        num_elements: An integer giving the number of scalar elements in x
+    返回:
+        num_elements: 一个整数，表示 x 中标量元素的数量
     """
-    num_elements = None
+    num_elements = 0
     ##########################################################################
     #                      TODO: Implement this function                     #
     #   You CANNOT use the built-in functions torch.numel(x) or x.numel().   #
     ##########################################################################
-    # Replace "pass" statement with your code
-    pass
+    rank = len(x.shape)
+    for i in range(rank):
+        num_elements = x.shape[i] if i == 0 else num_elements * x.shape[i]
     ##########################################################################
     #                            END OF YOUR CODE                            #
     ##########################################################################
@@ -112,8 +111,7 @@ def create_tensor_of_pi(M: int, N: int) -> Tensor:
     ##########################################################################
     #         TODO: Implement this function. It should take one line.        #
     ##########################################################################
-    # Replace "pass" statement with your code
-    pass
+    x = torch.full((M, N), 3.14)
     ##########################################################################
     #                            END OF YOUR CODE                            #
     ##########################################################################
@@ -138,8 +136,33 @@ def multiples_of_ten(start: int, stop: int) -> Tensor:
     ##########################################################################
     #                      TODO: Implement this function                     #
     ##########################################################################
-    # Replace "pass" statement with your code
-    pass
+    '''
+    torch.arange 说明:
+    
+    torch.arange 是一个用于创建张量的函数。它返回一个 1 维张量，其中包含从起始值到结束值 (不包括结束值) 之间的等间隔值。
+
+    函数签名:
+        torch.arange(start=0, end, step=1, *, out=None, dtype=None, 
+                layout=torch.strided, device=None, requires_grad=False) -> Tensor
+
+    参数:
+        - start (Number): 序列的起始值。默认值为 0。
+        - end (Number): 序列的结束值 (不包括在内) 。
+        - step (Number): 序列中值之间的间隔。默认值为 1。
+        - dtype (torch.dtype, optional): 返回张量的数据类型。默认值为 None。
+        - device (torch.device, optional): 返回张量的设备。默认值为 None。
+        - requires_grad (bool, optional): 如果为 True, 则记录对返回张量的操作以便进行自动求导。默认值为 False。
+
+    返回:
+        - Tensor: 包含从 start 到 end (不包括 end) 之间的等间隔值的 1 维张量。
+
+    示例:
+        >>> torch.arange(0, 10, 2)
+        tensor([0, 2, 4, 6, 8])
+    '''
+    x = torch.arange(start//10*10, stop, 10, dtype=torch.float64)
+    # 去除第一个元素
+    x = x[1:] if x[0] <= start else x
     ##########################################################################
     #                            END OF YOUR CODE                            #
     ##########################################################################
@@ -148,37 +171,31 @@ def multiples_of_ten(start: int, stop: int) -> Tensor:
 
 def slice_indexing_practice(x: Tensor) -> Tuple[Tensor, Tensor, Tensor, Tensor]:
     """
-    Given a two-dimensional tensor x, extract and return several subtensors to
-    practice with slice indexing. Each tensor should be created using a single
-    slice indexing operation.
+    给定一个二维张量 x, 提取并返回几个子张量以练习切片索引. 每个张量都应该使用单个切片索引操作创建.
 
-    The input tensor should not be modified.
+    输入张量不应被修改.
 
-    Args:
-        x: Tensor of shape (M, N) -- M rows, N columns with M >= 3 and N >= 5.
+    参数:
+        x: 形状为 (M, N) 的张量 -- M 行, N 列, 其中 M >= 3 且 N >= 5.
 
-    Returns:
-        A tuple of:
-        - last_row: Tensor of shape (N,) giving the last row of x. It should be
-          a one-dimensional tensor.
-        - third_col: Tensor of shape (M, 1) giving the third column of x. It
-          should be a two-dimensional tensor.
-        - first_two_rows_three_cols: Tensor of shape (2, 3) giving the data in
-          the first two rows and first three columns of x.
-        - even_rows_odd_cols: Two-dimensional tensor containing the elements in
-          the even-valued rows and odd-valued columns of x.
+    返回:
+        一个包含以下内容的元组:
+        - last_row: 形状为 (N,) 的张量, 给出 x 的最后一行. 它应该是一个一维张量.
+        - third_col: 形状为 (M, 1) 的张量, 给出 x 的第三列. 它应该是一个二维张量.
+        - first_two_rows_three_cols: 形状为 (2, 3) 的张量, 给出 x 的前两行和前三列的数据.
+        - even_rows_odd_cols: 二维张量, 包含 x 中偶数行和奇数列的元素.
     """
     assert x.shape[0] >= 3
     assert x.shape[1] >= 5
-    last_row = None
-    third_col = None
-    first_two_rows_three_cols = None
-    even_rows_odd_cols = None
+    M = x.shape[0]
+    N = x.shape[1]
+    last_row = x[M-1]
+    third_col = x[:, 2:3]
+    first_two_rows_three_cols = x[:2, :3]
+    even_rows_odd_cols = x[0::2, 1::2]
     ##########################################################################
     #                      TODO: Implement this function                     #
     ##########################################################################
-    # Replace "pass" statement with your code
-    pass
     ##########################################################################
     #                            END OF YOUR CODE                            #
     ##########################################################################
