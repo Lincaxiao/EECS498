@@ -1,5 +1,0 @@
-{
-    "python.analysis.typeCheckingMode": "basic",
-    "python.analysis.autoImportCompletions": true,
-    "editor.minimap.enabled": false
-}
