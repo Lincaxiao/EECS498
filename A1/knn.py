@@ -59,8 +59,13 @@ def compute_distances_two_loops(x_train: torch.Tensor, x_test: torch.Tensor):
     # You may not use torch.norm (or its instance method variant), nor any   #
     # functions from torch.nn or torch.nn.functional.                        #
     ##########################################################################
-    # Replace "pass" statement with your code
-    pass
+    # 首先平面化 x_train 和 x_test
+    x_train = x_train.view(num_train, -1)
+    x_test = x_test.view(num_test, -1)
+    # 计算欧式距离，使用显式循环
+    for i in range(num_train):
+        for j in range(num_test):
+            dists[i, j] = torch.sum((x_train[i] - x_test[j]) ** 2)
     ##########################################################################
     #                           END OF YOUR CODE                             #
     ##########################################################################
@@ -103,8 +108,12 @@ def compute_distances_one_loop(x_train: torch.Tensor, x_test: torch.Tensor):
     # You may not use torch.norm (or its instance method variant), nor any   #
     # functions from torch.nn or torch.nn.functional.                        #
     ##########################################################################
-    # Replace "pass" statement with your code
-    pass
+    x_train = x_train.view(num_train, -1)
+    x_test = x_test.view(num_test, -1)
+    # 只使用一个循环
+    for i in range(num_train):
+        # dim = 1表示按行求和
+        dists[i] = torch.sum((x_train[i] - x_test) ** 2, dim=1)
     ##########################################################################
     #                           END OF YOUR CODE                             #
     ##########################################################################
@@ -155,8 +164,18 @@ def compute_distances_no_loops(x_train: torch.Tensor, x_test: torch.Tensor):
     # HINT: Try to formulate the Euclidean distance using two broadcast sums #
     #       and a matrix multiply.                                           #
     ##########################################################################
-    # Replace "pass" statement with your code
-    pass
+    x_train = x_train.view(num_train, -1)
+    x_test = x_test.view(num_test, -1)
+    # 计算训练集和测试集的平方和
+    train_squared = torch.sum(x_train ** 2, dim=1, keepdim=True)  # 形状为 (num_train, 1)
+    test_squared = torch.sum(x_test ** 2, dim=1, keepdim=True)    # 形状为 (num_test, 1)
+
+    # 计算交叉项
+    cross_term = torch.mm(x_train, x_test.t())  # 形状为 (num_train, num_test)
+
+    # 计算平方欧几里得距离，**广播**
+    dists = train_squared - 2 * cross_term + test_squared.t()
+
     ##########################################################################
     #                           END OF YOUR CODE                             #
     ##########################################################################
@@ -165,41 +184,43 @@ def compute_distances_no_loops(x_train: torch.Tensor, x_test: torch.Tensor):
 
 def predict_labels(dists: torch.Tensor, y_train: torch.Tensor, k: int = 1):
     """
-    Given distances between all pairs of training and test samples, predict a
-    label for each test sample by taking a MAJORITY VOTE among its `k` nearest
-    neighbors in the training set.
+    给定所有训练样本和测试样本之间的距离，通过在训练集中对每个测试样本的 `k` 
+    个最近邻进行多数投票来预测每个测试样本的标签。
 
-    In the event of a tie, this function SHOULD return the smallest label. For
-    example, if k=5 and the 5 nearest neighbors to a test example have labels
-    [1, 2, 1, 2, 3] then there is a tie between 1 and 2 (each have 2 votes),
-    so we should return 1 since it is the smallest label.
+    如果出现平局，该函数应返回最小的标签。例如，如果 k=5 且某个测试样本的 5 
+    个最近邻的标签为 [1, 2, 1, 2, 3]，则 1 和 2 之间出现平局（每个都有 2 票），
+    因此我们应该返回 1，因为它是最小的标签。
 
-    This function should not modify any of its inputs.
+    该函数不应修改其任何输入。
 
-    Args:
-        dists: Tensor of shape (num_train, num_test) where dists[i, j] is the
-            squared Euclidean distance between the i-th training point and the
-            j-th test point.
-        y_train: Tensor of shape (num_train,) giving labels for all training
-            samples. Each label is an integer in the range [0, num_classes - 1]
-        k: The number of nearest neighbors to use for classification.
+    参数:
+        dists: 形状为 (num_train, num_test) 的张量，其中 dists[i, j] 
+        是第 i 个训练点和第 j 个测试点之间的平方欧几里得距离。
+        y_train: 形状为 (num_train,) 的张量，给出所有训练样本的标签。
+        每个标签都是范围 [0, num_classes - 1] 内的整数。
+        k: 用于分类的最近邻的数量。
 
-    Returns:
-        y_pred: int64 Tensor of shape (num_test,) giving predicted labels for
-            the test data, where y_pred[j] is the predicted label for the j-th
-            test example. Each label should be an integer in the range
-            [0, num_classes - 1].
+    返回:
+        y_pred: 形状为 (num_test,) 的 int64 张量，给出测试数据的预测标签，
+        其中 y_pred[j] 是第 j 个测试样本的预测标签。每个标签应为
+        范围 [0, num_classes - 1] 内的整数。
     """
-    num_train, num_test = dists.shape
-    y_pred = torch.zeros(num_test, dtype=torch.int64)
+    num_train, num_test = dists.shape # 获取训练集和测试集的数量
+    y_pred = torch.zeros(num_test, dtype=torch.int64) # 初始化预测标签
     ##########################################################################
     # TODO: Implement this function. You may use an explicit loop over the   #
     # test samples.                                                          #
     #                                                                        #
     # HINT: Look up the function torch.topk                                  #
     ##########################################################################
-    # Replace "pass" statement with your code
-    pass
+    y_train = y_train.view(-1, 1) # 将 y_train 转换为列向量
+    # 获取最近的 k 个邻居的索引
+    _, indices = torch.topk(dists, k=k, dim=0, largest=False) # 沿着列维度获取最小的 k 个值
+    # 获取最近的 k 个邻居的标签
+    k_labels = y_train[indices]
+    # 计算每个测试样本的预测标签，不使用循环
+    y_pred, _ = torch.mode(k_labels, dim=0) # 沿着列维度计算众数
+    y_pred = y_pred.view(-1) # 将 y_pred 转换为行向量
     ##########################################################################
     #                           END OF YOUR CODE                             #
     ##########################################################################
@@ -222,8 +243,8 @@ class KnnClassifier:
         # no computation and simply memorize the training data in            #
         # `self.x_train` and `self.y_train`, accordingly.                    #
         ######################################################################
-        # Replace "pass" statement with your code
-        pass
+        self.x_train = x_train
+        self.y_train = y_train
         ######################################################################
         #                         END OF YOUR CODE                           #
         ######################################################################
@@ -246,8 +267,8 @@ class KnnClassifier:
         # wrote above for computing distances (use the no-loop variant) and  #
         # to predict output labels.                                          #
         ######################################################################
-        # Replace "pass" statement with your code
-        pass
+        dists = compute_distances_no_loops(self.x_train, x_test)
+        y_test_pred = predict_labels(dists, self.y_train, k=k)
         ######################################################################
         #                         END OF YOUR CODE                           #
         ######################################################################
@@ -320,8 +341,8 @@ def knn_cross_validate(
     #                                                                        #
     # HINT: torch.chunk                                                      #
     ##########################################################################
-    # Replace "pass" statement with your code
-    pass
+    x_train_folds = torch.chunk(x_train, num_folds, dim=0) # 沿着行维度分割
+    y_train_folds = torch.chunk(y_train, num_folds, dim=0)
     ##########################################################################
     #                           END OF YOUR CODE                             #
     ##########################################################################
@@ -341,8 +362,18 @@ def knn_cross_validate(
     #                                                                        #
     # HINT: torch.cat                                                        #
     ##########################################################################
-    # Replace "pass" statement with your code
-    pass
+    for k in k_choices:
+        accuracies = []
+        for i in range(num_folds):
+            # 将除了第 i 个 fold 以外的所有 fold 拼接在一起
+            x_train_fold = torch.cat(x_train_folds[:i] + x_train_folds[i+1:], dim=0)
+            y_train_fold = torch.cat(y_train_folds[:i] + y_train_folds[i+1:], dim=0)
+            # 创建 KnnClassifier 实例
+            knn = KnnClassifier(x_train_fold, y_train_fold)
+            # 计算准确率
+            accuracy = knn.check_accuracy(x_train_folds[i], y_train_folds[i], k=k, quiet=True)
+            accuracies.append(accuracy)
+        k_to_accuracies[k] = accuracies
     ##########################################################################
     #                           END OF YOUR CODE                             #
     ##########################################################################
@@ -371,8 +402,8 @@ def knn_get_best_k(k_to_accuracies: Dict[int, List]):
     # choose the value of k, and store result in `best_k`. You should choose #
     # the value of k that has the highest mean accuracy accross all folds.   #
     ##########################################################################
-    # Replace "pass" statement with your code
-    pass
+    # 选择平均准确率最高的 k
+    best_k = max(k_to_accuracies, key=lambda k: sum(k_to_accuracies[k]) / len(k_to_accuracies[k]))
     ##########################################################################
     #                           END OF YOUR CODE                             #
     ##########################################################################

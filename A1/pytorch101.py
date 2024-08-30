@@ -39,14 +39,14 @@ def mutate_tensor(
     x: Tensor, indices: List[Tuple[int, int]], values: List[float]
 ) -> Tensor:
     """
-    根据索引和数值修改张量 x。具体来说, indices 是一个整数索引的列表 [(i0, j0), (i1, j1), ...], 
-    values 是一个数值的列表 [v0, v1, ...]。这个函数应该通过以下方式修改 x: 
+    根据索引和数值修改张量 x. 具体来说, indices 是一个整数索引的列表 [(i0, j0), (i1, j1), ...], 
+    values 是一个数值的列表 [v0, v1, ...]. 这个函数应该通过以下方式修改 x: 
 
     x[i0, j0] = v0
     x[i1, j1] = v1
-    依此类推。
+    依此类推. 
 
-    如果同一个索引对在 indices 中出现多次, 你应该将 x 设置为最后一个值。
+    如果同一个索引对在 indices 中出现多次, 你应该将 x 设置为最后一个值. 
 
     参数:
         x: 形状为 (H, W) 的张量
@@ -70,18 +70,18 @@ def mutate_tensor(
 
 def count_tensor_elements(x: Tensor) -> int:
     """
-    计算张量 x 中标量元素的数量。
+    计算张量 x 中标量元素的数量. 
 
-    例如，形状为 (10,) 的张量有 10 个元素；形状为 (3, 4) 的张量有 12 个元素；
-    形状为 (2, 3, 4) 的张量有 24 个元素，等等。
+    例如, 形状为 (10,) 的张量有 10 个元素; 形状为 (3, 4) 的张量有 12 个元素; 
+    形状为 (2, 3, 4) 的张量有 24 个元素, 等等. 
 
-    你不能使用 torch.numel 或 x.numel 函数。输入的张量不应被修改。
+    你不能使用 torch.numel 或 x.numel 函数. 输入的张量不应被修改. 
 
     参数:
         x: 任意形状的张量
 
     返回:
-        num_elements: 一个整数，表示 x 中标量元素的数量
+        num_elements: 一个整数, 表示 x 中标量元素的数量
     """
     num_elements = 0
     ##########################################################################
@@ -139,22 +139,22 @@ def multiples_of_ten(start: int, stop: int) -> Tensor:
     '''
     torch.arange 说明:
     
-    torch.arange 是一个用于创建张量的函数。它返回一个 1 维张量，其中包含从起始值到结束值 (不包括结束值) 之间的等间隔值。
+    torch.arange 是一个用于创建张量的函数. 它返回一个 1 维张量, 其中包含从起始值到结束值 (不包括结束值) 之间的等间隔值. 
 
     函数签名:
         torch.arange(start=0, end, step=1, *, out=None, dtype=None, 
                 layout=torch.strided, device=None, requires_grad=False) -> Tensor
 
     参数:
-        - start (Number): 序列的起始值。默认值为 0。
-        - end (Number): 序列的结束值 (不包括在内) 。
-        - step (Number): 序列中值之间的间隔。默认值为 1。
-        - dtype (torch.dtype, optional): 返回张量的数据类型。默认值为 None。
-        - device (torch.device, optional): 返回张量的设备。默认值为 None。
-        - requires_grad (bool, optional): 如果为 True, 则记录对返回张量的操作以便进行自动求导。默认值为 False。
+        - start (Number): 序列的起始值. 默认值为 0. 
+        - end (Number): 序列的结束值 (不包括在内) . 
+        - step (Number): 序列中值之间的间隔. 默认值为 1. 
+        - dtype (torch.dtype, optional): 返回张量的数据类型. 默认值为 None. 
+        - device (torch.device, optional): 返回张量的设备. 默认值为 None. 
+        - requires_grad (bool, optional): 如果为 True, 则记录对返回张量的操作以便进行自动求导. 默认值为 False. 
 
     返回:
-        - Tensor: 包含从 start 到 end (不包括 end) 之间的等间隔值的 1 维张量。
+        - Tensor: 包含从 start 到 end (不包括 end) 之间的等间隔值的 1 维张量. 
 
     示例:
         >>> torch.arange(0, 10, 2)
@@ -210,26 +210,23 @@ def slice_indexing_practice(x: Tensor) -> Tuple[Tensor, Tensor, Tensor, Tensor]:
 
 def slice_assignment_practice(x: Tensor) -> Tensor:
     """
-    Given a two-dimensional tensor of shape (M, N) with M >= 4, N >= 6, mutate
-    its first 4 rows and 6 columns so they are equal to:
+    给定一个形状为 (M, N) 的二维张量, 其中 M >= 4, N >= 6, 修改其前四行和前六列, 使其等于: 
 
     [0 1 2 2 2 2]
     [0 1 2 2 2 2]
     [3 4 3 4 5 5]
     [3 4 3 4 5 5]
 
-    Note: the input tensor shape is not fixed to (4, 6).
+    注意: 输入张量的形状不固定为 (4, 6). 
 
-    Your implementation must obey the following:
-    - You should mutate the tensor x in-place and return it
-    - You should only modify the first 4 rows and first 6 columns; all other
-      elements should remain unchanged
-    - You may only mutate the tensor using slice assignment operations, where
-      you assign an integer to a slice of the tensor
-    - You must use <= 6 slicing operations to achieve the desired result
+    你的实现必须遵守以下规则: 
+    - 应该就地修改张量 x 并返回它
+    - 只能修改前四行和前六列; 其他所有元素应保持不变
+    - 只能使用切片赋值操作来修改张量, 其中将一个整数赋给张量的一个切片
+    - 必须使用 <= 6 次切片操作来达到预期结果
 
     Args:
-        x: A tensor of shape (M, N) with M >= 4 and N >= 6
+        x: 形状为 (M, N) 的张量, 其中 M >= 4 且 N >= 6
 
     Returns:
         x
@@ -237,8 +234,8 @@ def slice_assignment_practice(x: Tensor) -> Tensor:
     ##########################################################################
     #                      TODO: Implement this function                     #
     ##########################################################################
-    # Replace "pass" statement with your code
-    pass
+    x[:2, :6] = torch.tensor([[0, 1, 2, 2, 2, 2], [0, 1, 2, 2, 2, 2]])
+    x[2:4, :6] = torch.tensor([[3, 4, 3, 4, 5, 5], [3, 4, 3, 4, 5, 5]])
     ##########################################################################
     #                            END OF YOUR CODE                            #
     ##########################################################################
@@ -247,26 +244,24 @@ def slice_assignment_practice(x: Tensor) -> Tensor:
 
 def shuffle_cols(x: Tensor) -> Tensor:
     """
-    Re-order the columns of an input tensor as described below.
+    重新排列输入张量的列, 如下所述. 
 
-    Your implementation should construct the output tensor using a single
-    integer array indexing operation. The input tensor should not be modified.
+    你的实现应该使用单个整数数组索引操作来构造输出张量. 输入张量不应被修改. 
 
-    Args:
-        x: A tensor of shape (M, N) with N >= 3
+    参数:
+        x: 形状为 (M, N) 的张量, 且 N >= 3
 
-    Returns:
-        A tensor y of shape (M, 4) where:
-        - The first two columns of y are copies of the first column of x
-        - The third column of y is the same as the third column of x
-        - The fourth column of y is the same as the second column of x
+    返回:
+        形状为 (M, 4) 的张量 y, 其中:
+        - y 的前两列是 x 的第一列的副本
+        - y 的第三列与 x 的第三列相同
+        - y 的第四列与 x 的第二列相同
     """
     y = None
     ##########################################################################
     #                      TODO: Implement this function                     #
     ##########################################################################
-    # Replace "pass" statement with your code
-    pass
+    y = x[:, [0, 0, 2, 1]]
     ##########################################################################
     #                            END OF YOUR CODE                            #
     ##########################################################################
@@ -275,28 +270,26 @@ def shuffle_cols(x: Tensor) -> Tensor:
 
 def reverse_rows(x: Tensor) -> Tensor:
     """
-    Reverse the rows of the input tensor.
+    反转输入张量的行. 
 
-    Your implementation should construct the output tensor using a single
-    integer array indexing operation. The input tensor should not be modified.
+    你的实现应该使用单个整数数组索引操作来构造输出张量. 输入张量不应被修改. 
 
-    Your implementation may not use torch.flip.
+    你的实现不能使用 torch.flip. 
 
-    Args:
-        x: A tensor of shape (M, N)
+    参数:
+        x: 形状为 (M, N) 的张量
 
-    Returns:
-        y: Tensor of shape (M, N) which is the same as x but with the rows
-            reversed - the first row of y should be equal to the last row of x,
-            the second row of y should be equal to the second to last row of x,
-            and so on.
+    返回:
+        y: 形状为 (M, N) 的张量, 与 x 相同, 但行顺序反转 - y 的第一行应等于 x 的最后一行,
+        y 的第二行应等于 x 的倒数第二行, 依此类推. 
     """
     y = None
     ##########################################################################
     #                      TODO: Implement this function                     #
     ##########################################################################
-    # Replace "pass" statement with your code
-    pass
+    # 先制造一个反转的索引
+    index = torch.arange(x.shape[0]-1, -1, -1)
+    y = x[index]
     ##########################################################################
     #                            END OF YOUR CODE                            #
     ##########################################################################
@@ -305,27 +298,26 @@ def reverse_rows(x: Tensor) -> Tensor:
 
 def take_one_elem_per_col(x: Tensor) -> Tensor:
     """
-    Construct a new tensor by picking out one element from each column of the
-    input tensor as described below.
+    构造一个新张量, 通过从输入张量的每一列中挑选一个元素, 如下所述. 
 
-    The input tensor should not be modified, and you should only access the
-    data of the input tensor using a single indexing operation.
+    输入张量不应被修改, 并且你应该只使用单个索引操作来访问输入张量的数据. 
 
-    Args:
-        x: A tensor of shape (M, N) with M >= 4 and N >= 3.
+    参数:
+        x: 形状为 (M, N) 的张量, 且 M >= 4 且 N >= 3. 
 
-    Returns:
-        A tensor y of shape (3,) such that:
-        - The first element of y is the second element of the first column of x
-        - The second element of y is the first element of the second column of x
-        - The third element of y is the fourth element of the third column of x
+    返回:
+        形状为 (3,) 的张量 y, 其中:
+        - y 的第一个元素是 x 的第一列的第二个元素
+        - y 的第二个元素是 x 的第二列的第一个元素
+        - y 的第三个元素是 x 的第三列的第四个元素
     """
     y = None
     ##########################################################################
     #                      TODO: Implement this function                     #
     ##########################################################################
-    # Replace "pass" statement with your code
-    pass
+    idx0 = torch.arange(3)
+    idx1 = torch.tensor([1, 0, 3])
+    y = x[idx1, idx0]
     ##########################################################################
     #                            END OF YOUR CODE                            #
     ##########################################################################
@@ -334,26 +326,25 @@ def take_one_elem_per_col(x: Tensor) -> Tensor:
 
 def make_one_hot(x: List[int]) -> Tensor:
     """
-    Construct a tensor of one-hot-vectors from a list of Python integers.
+    从一个 Python 整数列表构造一个独热向量 (one-hot vector )张量. 
 
-    Your implementation should not use any Python loops (including
-    comprehensions).
+    你的实现不应使用任何 Python 循环 (包括列表推导式). 
 
-    Args:
-        x: A list of N integers
+    参数:
+        x: 一个包含 N 个整数的列表
 
-    Returns:
-        y: Tensor of shape (N, C) and where C = 1 + max(x) is one more than the
-            max value in x. The nth row of y is a one-hot-vector representation
-            of x[n]; in other words, if x[n] = c then y[n, c] = 1; all other
-            elements of y are zeros. The dtype of y should be torch.float32.
+    返回:
+        y: 形状为 (N, C) 的张量, 其中 C = 1 + max(x), 即 x 中最大值加 1. 
+        y 的第 n 行是 x[n] 的独热向量表示; 换句话说, 如果 x[n] = c, 那么 y[n, c] = 1;
+        y 的所有其他元素都是零. y 的数据类型应为 torch.float32. 
     """
     y = None
     ##########################################################################
     #                      TODO: Implement this function                     #
     ##########################################################################
-    # Replace "pass" statement with your code
-    pass
+    C = 1 + max(x)
+    y = torch.zeros(len(x), C)
+    y[torch.arange(len(x)), x] = 1
     ##########################################################################
     #                            END OF YOUR CODE                            #
     ##########################################################################
@@ -362,35 +353,33 @@ def make_one_hot(x: List[int]) -> Tensor:
 
 def sum_positive_entries(x: Tensor) -> Tensor:
     """
-    Return the sum of all the positive values in the input tensor x.
+    返回输入张量 x 中所有正值的和。
 
-    For example, given the input tensor
+    例如，给定输入张量
 
     x = [[ -1   2   0 ],
          [  0   5  -3 ],
          [  8  -9   0 ]]
 
-    This function should return sum_positive_entries(x) = 2 + 5 + 8 = 15
+    这个函数应该返回 sum_positive_entries(x) = 2 + 5 + 8 = 15
 
-    Your output should be a Python integer, *not* a PyTorch scalar.
+    你的输出应该是一个 Python 整数，*不是* PyTorch 标量。
 
-    Your implementation should not modify the input tensor, and should not use
-    any explicit Python loops (including comprehensions). You should access
-    the data of the input tensor using only a single comparison operation and a
-    single indexing operation.
+    你的实现不应修改输入张量，并且不应使用任何显式的 Python 循环（包括列表推导式）。
+    你应该只使用一个比较操作和一个索引操作来访问输入张量的数据。
 
-    Args:
-        x: A tensor of any shape with dtype torch.int64
+    参数:
+        x: 一个任意形状且数据类型为 torch.int64 的张量
 
-    Returns:
-        pos_sum: Python integer giving the sum of all positive values in x
+    返回:
+        pos_sum: 一个 Python 整数，表示 x 中所有正值的和
     """
     pos_sum = None
     ##########################################################################
     #                      TODO: Implement this function                     #
     ##########################################################################
-    # Replace "pass" statement with your code
-    pass
+    mask = x > 0
+    pos_sum = x[mask].sum().item()
     ##########################################################################
     #                            END OF YOUR CODE                            #
     ##########################################################################
@@ -420,8 +409,12 @@ def reshape_practice(x: Tensor) -> Tensor:
     ##########################################################################
     #                      TODO: Implement this function                     #
     ##########################################################################
-    # Replace "pass" statement with your code
-    pass
+    # 先将 x 转换为 2*3*4 的张量, 然后转置为 3*2*4, 再转换为 3*8
+    '''
+    先转换为 2*3*4 的张量, x = [[0, 1, 2, 3], [4, 5, 6, 7], [8, 9, 10, 11], 
+                                [12, 13, 14, 15], [16, 17, 18, 19], [20, 21, 22, 23]]
+    '''
+    y = x.reshape(2, 3, 4).transpose(1, 0).reshape(3, 8)
     ##########################################################################
     #                            END OF YOUR CODE                            #
     ##########################################################################
@@ -430,37 +423,34 @@ def reshape_practice(x: Tensor) -> Tensor:
 
 def zero_row_min(x: Tensor) -> Tensor:
     """
-    Return a copy of the input tensor x, where the minimum value along each row
-    has been set to 0.
+    返回输入张量 x 的副本，其中每行的最小值已被设置为 0。
 
-    For example, if x is:
+    例如，如果 x 是：
     x = torch.tensor([
           [10, 20, 30],
           [ 2,  5,  1]])
 
-    Then y = zero_row_min(x) should be:
+    那么 y = zero_row_min(x) 应该是：
     torch.tensor([
         [0, 20, 30],
         [2,  5,  0]
     ])
 
-    Your implementation shoud use reduction and indexing operations. You should
-    not use any Python loops (including comprehensions). The input tensor
-    should not be modified.
+    你的实现应该使用归约和索引操作。你不应该使用任何 Python 循环（包括列表推导式）。输入张量不应被修改。
 
-    Args:
-        x: Tensor of shape (M, N)
+    参数:
+        x: 形状为 (M, N) 的张量
 
-    Returns:
-        y: Tensor of shape (M, N) that is a copy of x, except the minimum value
-            along each row is replaced with 0.
+    返回:
+        y: 形状为 (M, N) 的张量，是 x 的副本，但每行的最小值被替换为 0。
     """
     y = None
     ##########################################################################
     #                      TODO: Implement this function                     #
     ##########################################################################
-    # Replace "pass" statement with your code
-    pass
+    y = x.clone()
+    min_val, _ = y.min(dim=1, keepdim=True)
+    y[y == min_val] = 0
     ##########################################################################
     #                            END OF YOUR CODE                            #
     ##########################################################################
@@ -515,8 +505,12 @@ def batched_matrix_multiply_loop(x: Tensor, y: Tensor) -> Tensor:
     ###########################################################################
     #                      TODO: Implement this function                      #
     ###########################################################################
-    # Replace "pass" statement with your code
-    pass
+    # 使用循环实现矩阵乘法
+    B, N, M = x.shape
+    _, M, P = y.shape
+    z = torch.zeros(B, N, P, dtype=x.dtype)
+    for i in range(B):
+        z[i] = x[i].mm(y[i])
     ###########################################################################
     #                           END OF YOUR CODE                              #
     ###########################################################################
@@ -546,8 +540,8 @@ def batched_matrix_multiply_noloop(x: Tensor, y: Tensor) -> Tensor:
     ###########################################################################
     #                      TODO: Implement this function                      #
     ###########################################################################
-    # Replace "pass" statement with your code
-    pass
+    # 使用 torch.bmm 实现矩阵乘法
+    z = torch.bmm(x, y)
     ###########################################################################
     #                            END OF YOUR CODE                             #
     ###########################################################################
@@ -556,33 +550,30 @@ def batched_matrix_multiply_noloop(x: Tensor, y: Tensor) -> Tensor:
 
 def normalize_columns(x: Tensor) -> Tensor:
     """
-    Normalize the columns of the matrix x by subtracting the mean and dividing
-    by standard deviation of each column. You should return a new tensor; the
-    input should not be modified.
+    通过减去每列的均值并除以每列的标准差来规范化矩阵 x 的列。
+    你应该返回一个新的张量；输入不应被修改。
 
-    More concretely, given an input tensor x of shape (M, N), produce an output
-    tensor y of shape (M, N) where y[i, j] = (x[i, j] - mu_j) / sigma_j, where
-    mu_j is the mean of the column x[:, j].
+    更具体地说，给定一个形状为 (M, N) 的输入张量 x，生成一个形状为 (M, N) 的输出张量 y，
+    其中 y[i, j] = (x[i, j] - mu_j) / sigma_j，mu_j 是列 x[:, j] 的均值，
+    sigma_j 是列 x[:, j] 的标准差。
 
-    Your implementation should not use any explicit Python loops (including
-    comprehensions); you may only use basic arithmetic operations on tensors
-    (+, -, *, /, **, sqrt), the sum reduction function, and reshape operations
-    to facilitate broadcasting. You should not use torch.mean, torch.std, or
-    their instance method variants x.mean, x.std.
+    你的实现不应使用任何显式的 Python 循环（包括列表推导式）；
+    你只能使用张量上的基本算术运算（+、-、*、/、**、sqrt）、sum 归约函数和 reshape 操作来促进广播。
+    你不应使用 torch.mean、torch.std 或它们的实例方法变体 x.mean、x.std。
 
-    Args:
-        x: Tensor of shape (M, N).
+    参数:
+        x: 形状为 (M, N) 的张量。
 
-    Returns:
-        y: Tensor of shape (M, N) as described above. It should have the same
-            dtype as the input x.
+    返回:
+        y: 形状为 (M, N) 的张量，如上所述。它应该具有与输入 x 相同的数据类型。
     """
     y = None
     ##########################################################################
     #                      TODO: Implement this function                     #
     ##########################################################################
-    # Replace "pass" statement with your code
-    pass
+    mu = x.mean(dim=0)
+    sigma = x.std(dim=0)
+    y = (x - mu) / sigma
     ##########################################################################
     #                            END OF YOUR CODE                            #
     ##########################################################################
@@ -628,8 +619,9 @@ def mm_on_gpu(x: Tensor, w: Tensor) -> Tensor:
     ##########################################################################
     #                      TODO: Implement this function                     #
     ##########################################################################
-    # Replace "pass" statement with your code
-    pass
+    x = x.cuda()
+    w = w.cuda()
+    y = x.mm(w).cpu()
     ##########################################################################
     #                            END OF YOUR CODE                            #
     ##########################################################################
@@ -662,8 +654,16 @@ def challenge_mean_tensors(xs: List[Tensor], ls: Tensor) -> Tensor:
     # TODO: Implement this function without using `for` loops and store the  #
     # mean values as a tensor in `y`.                                        #
     ##########################################################################
-    # Replace "pass" statement with your code
-    pass
+    # 将所有张量拼接成一个长张量
+    concatenated = torch.cat(xs)
+    
+    # 计算每个张量的起始索引
+    indices = torch.cumsum(ls, dim=0) - ls
+    
+    # 计算每个张量的均值
+    sums = torch.cumsum(concatenated, dim=0)
+    sums = sums[ls - 1] - torch.cat([torch.tensor([0], device=sums.device), sums[indices[:-1]]])
+    y = sums / ls
     ##########################################################################
     #                            END OF YOUR CODE                            #
     ##########################################################################
@@ -702,8 +702,7 @@ def challenge_get_uniques(x: torch.Tensor) -> Tuple[Tensor, Tensor]:
     # TODO: Implement this function without using `for` loops and within     #
     # O(N) memory.                                                           #
     ##########################################################################
-    # Replace "pass" statement with your code
-    pass
+    uniques, indices = torch.unique(x, return_inverse=True)
     ##########################################################################
     #                            END OF YOUR CODE                            #
     ##########################################################################
