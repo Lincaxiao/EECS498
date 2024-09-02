@@ -3,3 +3,4 @@ cifar-10-batches-py/
 .idea/
 __pycache__/
 .vscode/
+minist_dataset/
