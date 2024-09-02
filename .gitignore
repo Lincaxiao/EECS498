@@ -4,3 +4,4 @@ cifar-10-batches-py/
 __pycache__/
 .vscode/
 mnist_dataset/
+.ipynb_checkpoints/
