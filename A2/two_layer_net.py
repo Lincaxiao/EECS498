@@ -20,13 +20,13 @@ def hello_two_layer_net():
 # Template class modules that we will use later: Do not edit/modify this class
 class TwoLayerNet(object):
     def __init__(
-        self,
-        input_size: int,
-        hidden_size: int,
-        output_size: int,
-        dtype: torch.dtype = torch.float32,
-        device: str = "cuda",
-        std: float = 1e-4,
+            self,
+            input_size: int,
+            hidden_size: int,
+            output_size: int,
+            dtype: torch.dtype = torch.float32,
+            device: str = "cuda",
+            std: float = 1e-4,
     ):
         """
         Initialize the model. Weights are initialized to small random values and
@@ -61,25 +61,25 @@ class TwoLayerNet(object):
         self.params["b2"] = torch.zeros(output_size, dtype=dtype, device=device)
 
     def loss(
-        self,
-        X: torch.Tensor,
-        y: Optional[torch.Tensor] = None,
-        reg: float = 0.0,
+            self,
+            X: torch.Tensor,
+            y: Optional[torch.Tensor] = None,
+            reg: float = 0.0,
     ):
         return nn_forward_backward(self.params, X, y, reg)
 
     def train(
-        self,
-        X: torch.Tensor,
-        y: torch.Tensor,
-        X_val: torch.Tensor,
-        y_val: torch.Tensor,
-        learning_rate: float = 1e-3,
-        learning_rate_decay: float = 0.95,
-        reg: float = 5e-6,
-        num_iters: int = 100,
-        batch_size: int = 200,
-        verbose: bool = False,
+            self,
+            X: torch.Tensor,
+            y: torch.Tensor,
+            X_val: torch.Tensor,
+            y_val: torch.Tensor,
+            learning_rate: float = 1e-3,
+            learning_rate_decay: float = 0.95,
+            reg: float = 5e-6,
+            num_iters: int = 100,
+            batch_size: int = 200,
+            verbose: bool = False,
     ):
         # fmt: off
         return nn_train(
@@ -146,8 +146,8 @@ def nn_forward_pass(params: Dict[str, torch.Tensor], X: torch.Tensor):
     # Store the result in the scores variable, which should be an tensor of    #
     # shape (N, C).                                                            #
     ############################################################################
-    # Replace "pass" statement with your code
-    pass
+    hidden = torch.maximum(torch.matmul(X, W1) + b1, torch.tensor(0.0))
+    scores = torch.matmul(hidden, W2) + b2
     ###########################################################################
     #                             END OF YOUR CODE                            #
     ###########################################################################
@@ -156,10 +156,10 @@ def nn_forward_pass(params: Dict[str, torch.Tensor], X: torch.Tensor):
 
 
 def nn_forward_backward(
-    params: Dict[str, torch.Tensor],
-    X: torch.Tensor,
-    y: Optional[torch.Tensor] = None,
-    reg: float = 0.0
+        params: Dict[str, torch.Tensor],
+        X: torch.Tensor,
+        y: Optional[torch.Tensor] = None,
+        reg: float = 0.0
 ):
     """
     Compute the loss and gradients for a two layer fully connected neural
@@ -211,8 +211,14 @@ def nn_forward_backward(
     # If you are not careful here, it is easy to run into numeric instability  #
     # (Check Numeric Stability in http://cs231n.github.io/linear-classify/).   #
     ############################################################################
-    # Replace "pass" statement with your code
-    pass
+    scores -= torch.max(scores, dim=1, keepdim=True).values  # 数值稳定性
+    exp_scores = torch.exp(scores)
+    probs = exp_scores / torch.sum(exp_scores, dim=1, keepdim=True)
+    correct_logprobs = -torch.log(probs[range(N), y])
+    # 计算loss
+    data_loss = torch.sum(correct_logprobs) / N
+    reg_loss = reg * (torch.sum(W1 * W1) + torch.sum(W2 * W2))
+    loss = data_loss + reg_loss
     ###########################################################################
     #                             END OF YOUR CODE                            #
     ###########################################################################
@@ -225,8 +231,15 @@ def nn_forward_backward(
     # For example, grads['W1'] should store the gradient on W1, and be a      #
     # tensor of same size                                                     #
     ###########################################################################
-    # Replace "pass" statement with your code
-    pass
+    probs[range(N), y] -= 1
+    probs /= N  # 求平均
+    grads["W2"] = torch.matmul(h1.t(), probs) + 2 * reg * W2
+    grads["b2"] = torch.sum(probs, dim=0)
+    # 求hidden层的梯度
+    dhidden = torch.matmul(probs, W2.t())
+    dhidden[h1 <= 0] = 0  # ReLU的梯度
+    grads["W1"] = torch.matmul(X.t(), dhidden) + 2 * reg * W1
+    grads["b1"] = torch.sum(dhidden, dim=0)
     ###########################################################################
     #                             END OF YOUR CODE                            #
     ###########################################################################
@@ -235,19 +248,19 @@ def nn_forward_backward(
 
 
 def nn_train(
-    params: Dict[str, torch.Tensor],
-    loss_func: Callable,
-    pred_func: Callable,
-    X: torch.Tensor,
-    y: torch.Tensor,
-    X_val: torch.Tensor,
-    y_val: torch.Tensor,
-    learning_rate: float = 1e-3,
-    learning_rate_decay: float = 0.95,
-    reg: float = 5e-6,
-    num_iters: int = 100,
-    batch_size: int = 200,
-    verbose: bool = False,
+        params: Dict[str, torch.Tensor],
+        loss_func: Callable,
+        pred_func: Callable,
+        X: torch.Tensor,
+        y: torch.Tensor,
+        X_val: torch.Tensor,
+        y_val: torch.Tensor,
+        learning_rate: float = 1e-3,
+        learning_rate_decay: float = 0.95,
+        reg: float = 5e-6,
+        num_iters: int = 100,
+        batch_size: int = 200,
+        verbose: bool = False,
 ):
     """
     Train this neural network using stochastic gradient descent.
@@ -306,8 +319,9 @@ def nn_train(
         # using stochastic gradient descent. You'll need to use the gradients   #
         # stored in the grads dictionary defined above.                         #
         #########################################################################
-        # Replace "pass" statement with your code
-        pass
+        Params = ["W1", "b1", "W2", "b2"]
+        for param in Params:
+            params[param] -= learning_rate * grads[param]
         #########################################################################
         #                             END OF YOUR CODE                          #
         #########################################################################
@@ -336,7 +350,7 @@ def nn_train(
 
 
 def nn_predict(
-    params: Dict[str, torch.Tensor], loss_func: Callable, X: torch.Tensor
+        params: Dict[str, torch.Tensor], loss_func: Callable, X: torch.Tensor
 ):
     """
     Use the trained weights of this two-layer network to predict labels for
@@ -364,8 +378,8 @@ def nn_predict(
     ###########################################################################
     # TODO: Implement this function; it should be VERY simple!                #
     ###########################################################################
-    # Replace "pass" statement with your code
-    pass
+    scores, _ = nn_forward_pass(params, X)
+    y_pred = torch.argmax(scores, dim=1)
     ###########################################################################
     #                              END OF YOUR CODE                           #
     ###########################################################################
@@ -413,7 +427,7 @@ def nn_get_search_params():
 
 
 def find_best_net(
-    data_dict: Dict[str, torch.Tensor], get_param_set_fn: Callable
+        data_dict: Dict[str, torch.Tensor], get_param_set_fn: Callable
 ):
     """
     Tune hyperparameters using the validation set.
@@ -459,8 +473,39 @@ def find_best_net(
     # to write code to sweep through possible combinations of hyperparameters   #
     # automatically like we did on the previous exercises.                      #
     #############################################################################
-    # Replace "pass" statement with your code
-    pass
+    import eecs598
+    from eecs598.a2_helpers import plot_acc_curves
+    from two_layer_net import TwoLayerNet
+    hidden_layer = [128, 256, 512]
+    # 生成 [0.8, 1.5] 之间的等差数列
+    learning_rate = [0.8 + i * 0.1 for i in range(6)]
+    reg = [1e-6, 1e-5, 1e-4, 5e-4, 1e-3]
+    decay = [0.90, 0.93, 0.95, 0.97]
+    for hidden_size in hidden_layer:
+        for lr in learning_rate:
+            for reg_strength in reg:
+                for decay_rate in decay:
+                    print(f"hidden_size: {hidden_size}, lr: {lr}, reg_strength: {reg_strength}")
+                    eecs598.reset_seed(0)
+                    net = TwoLayerNet(3 * 32 * 32, hidden_size, 10,
+                                      device=data_dict["X_train"].device, dtype=data_dict["X_train"].dtype)
+                    stats = net.train(data_dict["X_train"], data_dict["y_train"], data_dict["X_val"],
+                                      data_dict["y_val"],
+                                      num_iters=3000, batch_size=1000, learning_rate=lr, learning_rate_decay=decay_rate,
+                                      reg=reg_strength, verbose=False)
+                    val_acc = stats['val_acc_history'][-1]
+                    print('lr = {}, hs = {}, reg = {}, dr = {}: val_acc = {}' \
+                          .format(lr, hidden_size, reg_strength, decay_rate, val_acc))
+                    if val_acc > best_val_acc:
+                        best_lr = lr
+                        best_hs = hidden_size
+                        best_reg = reg_strength
+
+                        best_val_acc = val_acc
+                        best_net = net
+                        best_stat = stats
+
+    print('hyperparameters with best model: lr = {}, hs = {}, reg = {}'.format(best_lr, best_hs, best_reg))
     #############################################################################
     #                               END OF YOUR CODE                            #
     #############################################################################
