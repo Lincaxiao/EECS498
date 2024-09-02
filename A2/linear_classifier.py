@@ -511,8 +511,21 @@ def softmax_loss_naive(
     # in http://cs231n.github.io/linear-classify/). Plus, don't forget the      #
     # regularization!                                                           #
     #############################################################################
-    # Replace "pass" statement with your code
-    pass
+    num_train = X.shape[0]
+    num_classes = W.shape[1]
+    for i in range(num_train):
+        # softmax loss 表示为 -log(e^(f_yi) / ∑e^(f_j))
+        scores = W.t().mv(X[i])  # scores 的形状为 (C,)
+        scores -= torch.max(scores)  # 为了数值稳定性, 减去最大值
+        loss += -scores[y[i]] + torch.log(torch.sum(torch.exp(scores)))
+        for j in range(num_classes):
+            # 线性分类器的梯度直接乘系数
+            dW[:, j] += torch.exp(scores[j]) / torch.sum(torch.exp(scores)) * X[i]
+        dW[:, y[i]] -= X[i]
+    loss /= num_train
+    loss += reg * torch.sum(W * W)
+    dW /= num_train
+    dW += 2 * reg * W
     #############################################################################
     #                          END OF YOUR CODE                                 #
     #############################################################################
@@ -541,8 +554,21 @@ def softmax_loss_vectorized(
     # in http://cs231n.github.io/linear-classify/). Don't forget the            #
     # regularization!                                                           #
     #############################################################################
-    # Replace "pass" statement with your code
-    pass
+    num_train = X.shape[0]
+    num_classes = W.shape[1]
+    scores = X.mm(W)  # scores 的形状为 (N, C)
+    scores -= torch.max(scores, dim=1, keepdim=True).values  # 为了数值稳定性, 减去最大值
+    loss = -scores[torch.arange(num_train), y] + torch.log(torch.sum(torch.exp(scores), dim=1))
+    loss = torch.sum(loss) / num_train
+    loss += reg * torch.sum(W * W)  # 求出loss
+    # 计算梯度
+    exp_scores = torch.exp(scores)  # exp_scores 的形状为 (N, C)
+    sum_exp_scores = torch.sum(exp_scores, dim=1, keepdim=True)  # sum_exp_scores 的形状为 (N, 1)
+    exp_scores /= sum_exp_scores  # 归一化
+    # 将正确的位置置为负梯度
+    exp_scores[torch.arange(num_train), y] -= 1  # one-hot编码
+    dW = X.t().mm(exp_scores) / num_train
+    dW += 2 * reg * W
     #############################################################################
     #                          END OF YOUR CODE                                 #
     #############################################################################
@@ -570,8 +596,10 @@ def softmax_get_search_params():
     # different hyperparameters to achieve good performance with the softmax  #
     # classifier.                                                             #
     ###########################################################################
-    # Replace "pass" statement with your code
-    pass
+    # 生成一个从[0.08, 0.15]的等差学习率序列
+    learning_rates = [0.08 + 0.01 * i for i in range(8)]
+    # 生成一个从[8e-5, 1.5e-4]的等差正则化强度序列
+    regularization_strengths = [8e-5 + 1e-5 * i for i in range(8)]
     ###########################################################################
     #                           END OF YOUR CODE                              #
     ###########################################################################
