@@ -49,18 +49,18 @@ class Linear(object):
         is_w_cuda = w.is_cuda
         is_b_cuda = b.is_cuda
         if is_chenged_x_cuda and is_w_cuda and is_b_cuda:
-          out = torch.mm(changed_x, w) + b
+            out = torch.mm(changed_x, w) + b
         else:
-          changed_x = changed_x.to('cuda')
-          w = w.to('cuda')
-          b = b.to('cuda')
-          out = torch.mm(changed_x, w) + b
+            changed_x = changed_x.to('cuda')
+            w = w.to('cuda')
+            b = b.to('cuda')
+            out = torch.mm(changed_x, w) + b
         if not is_chenged_x_cuda:
-          changed_x = changed_x.to('cpu')
+            changed_x = changed_x.to('cpu')
         if not is_w_cuda:
-          w = w.to('cpu')
+            w = w.to('cpu')
         if not is_b_cuda:
-          b = b.to('cpu')
+            b = b.to('cpu')
         ######################################################################
         #                        END OF YOUR CODE                            #
         ######################################################################
@@ -92,9 +92,9 @@ class Linear(object):
         is_w_cuda = w.is_cuda
         is_dout_cuda = dout.is_cuda
         if not (is_x_cuda and is_w_cuda and is_dout_cuda):
-          dout = dout.to('cuda')
-          w = w.to('cuda')
-          x = x.to('cuda')
+            dout = dout.to('cuda')
+            w = w.to('cuda')
+            x = x.to('cuda')
         # b的梯度就是dout每一列的和
         db = dout.sum(dim=0)
         # w的梯度是x的转置乘dout
@@ -102,11 +102,11 @@ class Linear(object):
         # x的梯度是dout乘w的转置
         dx = dout.mm(w.t()).view(x.shape)
         if not is_x_cuda:
-          dx = dx.to('cpu')
+            dx = dx.to('cpu')
         if not is_w_cuda:
-          w = w.to('cpu')
+            w = w.to('cpu')
         if not is_dout_cuda:
-          dout = dout.to('cpu')
+            dout = dout.to('cpu')
         ##################################################
         #                END OF YOUR CODE                #
         ##################################################
@@ -133,7 +133,7 @@ class ReLU(object):
         # in-place operation.                             #
         ###################################################
         # 函数 clamp 用于限制张量中的元素的范围，使其不小于 min 且不大于 max
-        out = x.clamp(min=0) # 小于0的值变为0
+        out = x.clamp(min=0)  # 小于0的值变为0
         ###################################################
         #                 END OF YOUR CODE                #
         ###################################################
@@ -211,7 +211,7 @@ class TwoLayerNet(object):
     self.params that maps parameter names to PyTorch tensors.
     """
 
-    def __init__(self, input_dim=3*32*32, hidden_dim=100, num_classes=10,
+    def __init__(self, input_dim=3 * 32 * 32, hidden_dim=100, num_classes=10,
                  weight_scale=1e-3, reg=0.0,
                  dtype=torch.float64, device='cuda'):
         """
@@ -244,15 +244,15 @@ class TwoLayerNet(object):
         self.params['b1'] = (torch.zeros(hidden_dim).double()).to(device)
         self.params['W2'] = (torch.randn(hidden_dim, num_classes).double() * weight_scale).to(device)
         self.params['b2'] = (torch.zeros(num_classes).double()).to(device)
-        
+
         ###############################################################
         #                            END OF YOUR CODE                 #
         ###############################################################
 
     def save(self, path):
         checkpoint = {
-          'reg': self.reg,
-          'params': self.params,
+            'reg': self.reg,
+            'params': self.params,
         }
 
         torch.save(checkpoint, path)
@@ -326,7 +326,7 @@ class TwoLayerNet(object):
         dout, grads['W1'], grads['b1'] = Linear_ReLU.backward(dout, cache1)
         grads['W2'] += 2 * self.reg * self.params['W2']
         grads['W1'] += 2 * self.reg * self.params['W1']
-        
+
         ###################################################################
         #                     END OF YOUR CODE                            #
         ###################################################################
@@ -348,7 +348,7 @@ class FullyConnectedNet(object):
     self.params dictionary and will be learned using the Solver class.
     """
 
-    def __init__(self, hidden_dims, input_dim=3*32*32, num_classes=10,
+    def __init__(self, hidden_dims, input_dim=3 * 32 * 32, num_classes=10,
                  dropout=0.0, reg=0.0, weight_scale=1e-2, seed=None,
                  dtype=torch.double, device='cuda'):
         """
@@ -414,12 +414,12 @@ class FullyConnectedNet(object):
 
     def save(self, path):
         checkpoint = {
-          'reg': self.reg,
-          'dtype': self.dtype,
-          'params': self.params,
-          'num_layers': self.num_layers,
-          'use_dropout': self.use_dropout,
-          'dropout_param': self.dropout_param,
+            'reg': self.reg,
+            'dtype': self.dtype,
+            'params': self.params,
+            'num_layers': self.num_layers,
+            'use_dropout': self.use_dropout,
+            'dropout_param': self.dropout_param,
         }
 
         torch.save(checkpoint, path)
@@ -464,11 +464,12 @@ class FullyConnectedNet(object):
         dropout_cache = {}
         out = X
         for i in range(1, self.num_layers):
-          out, relu_cache[i] = Linear_ReLU.forward(out, self.params['W' + str(i)], self.params['b' + str(i)])
-          if self.use_dropout:
-            out, dropout_cache[i] = Dropout.forward(out, self.dropout_param)
-        scores, cache = Linear.forward(out, self.params['W' + str(self.num_layers)], self.params['b' + str(self.num_layers)])
-        
+            out, relu_cache[i] = Linear_ReLU.forward(out, self.params['W' + str(i)], self.params['b' + str(i)])
+            if self.use_dropout:
+                out, dropout_cache[i] = Dropout.forward(out, self.dropout_param)
+        scores, cache = Linear.forward(out, self.params['W' + str(self.num_layers)],
+                                       self.params['b' + str(self.num_layers)])
+
         #################################################################
         #                      END OF YOUR CODE                         #
         #################################################################
@@ -491,15 +492,15 @@ class FullyConnectedNet(object):
         #####################################################################
         loss, dout = softmax_loss(scores, y)
         for i in range(1, self.num_layers + 1):
-          loss += torch.sum(self.params['W' + str(i)] ** 2) * self.reg
+            loss += torch.sum(self.params['W' + str(i)] ** 2) * self.reg
         for i in range(self.num_layers, 0, -1):
-          if i == self.num_layers:
-            dout, grads['W' + str(i)], grads['b' + str(i)] = Linear.backward(dout, cache)
-          else:
-            if self.use_dropout:
-              dout = Dropout.backward(dout, dropout_cache[i])
-            dout, grads['W' + str(i)], grads['b' + str(i)] = Linear_ReLU.backward(dout, relu_cache[i])
-          grads['W' + str(i)] += 2 * self.reg * self.params['W' + str(i)]
+            if i == self.num_layers:
+                dout, grads['W' + str(i)], grads['b' + str(i)] = Linear.backward(dout, cache)
+            else:
+                if self.use_dropout:
+                    dout = Dropout.backward(dout, dropout_cache[i])
+                dout, grads['W' + str(i)], grads['b' + str(i)] = Linear_ReLU.backward(dout, relu_cache[i])
+            grads['W' + str(i)] += 2 * self.reg * self.params['W' + str(i)]
         ###########################################################
         #                   END OF YOUR CODE                      #
         ###########################################################
@@ -514,8 +515,8 @@ def create_solver_instance(data_dict, dtype, device):
     # achieves at least 50% accuracy on the validation set.     #
     #############################################################
     solver = Solver(model, data_dict, optim_config={
-              'learning_rate': 1e-1,
-            }, batch_size=100)
+        'learning_rate': 1e-1,
+    }, batch_size=100)
     ##############################################################
     #                    END OF YOUR CODE                        #
     ##############################################################
@@ -527,7 +528,7 @@ def get_three_layer_network_params():
     # TODO: Change weight_scale and learning_rate so your         #
     # model achieves 100% training accuracy within 20 epochs.     #
     ###############################################################
-    weight_scale = 1   # Experiment with this!
+    weight_scale = 1  # Experiment with this!
     learning_rate = 1e-2  # Experiment with this!
     ################################################################
     #                             END OF YOUR CODE                 #
@@ -541,7 +542,7 @@ def get_five_layer_network_params():
     # model achieves 100% training accuracy within 20 epochs.      #
     ################################################################
     learning_rate = 9e-2  # Experiment with this!
-    weight_scale = 2e-1   # Experiment with this!
+    weight_scale = 2e-1  # Experiment with this!
     ################################################################
     #                       END OF YOUR CODE                       #
     ################################################################
