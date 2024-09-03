@@ -240,6 +240,8 @@ class Solver(object):
             y_pred.append(torch.argmax(scores, dim=1))
 
         y_pred = torch.cat(y_pred)
+        # 将y_pred与y转移到同一个device上
+        y = y.to(y_pred.device)
         acc = (y_pred == y).to(torch.float).mean()
 
         return acc.item()
