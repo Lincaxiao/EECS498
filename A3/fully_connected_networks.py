@@ -3,6 +3,7 @@ Implements fully connected networks in PyTorch.
 WARNING: you SHOULD NOT use ".to()" or ".cuda()" in each implementation block.
 """
 import torch
+
 from a3_helper import softmax_loss
 from eecs598 import Solver
 
@@ -44,7 +45,7 @@ class Linear(object):
         b = b.double()
         # Reshape x to (N, D)
         N = x.shape[0]
-        changed_x = x.view(N, -1)
+        changed_x = x.reshape(N, -1)
         is_chenged_x_cuda = changed_x.is_cuda
         is_w_cuda = w.is_cuda
         is_b_cuda = b.is_cuda
@@ -98,9 +99,9 @@ class Linear(object):
         # b的梯度就是dout每一列的和
         db = dout.sum(dim=0)
         # w的梯度是x的转置乘dout
-        dw = x.view(x.shape[0], -1).t().mm(dout)
+        dw = x.reshape(x.shape[0], -1).t().mm(dout)
         # x的梯度是dout乘w的转置
-        dx = dout.mm(w.t()).view(x.shape)
+        dx = dout.mm(w.t()).reshape(x.shape)
         if not is_x_cuda:
             dx = dx.to('cpu')
         if not is_w_cuda:
@@ -157,9 +158,8 @@ class ReLU(object):
         # You should not change the input tensor with an    #
         # in-place operation.                               #
         #####################################################
-        x[x > 0] = 1
-        x[x <= 0] = 0
-        dx = dout * x
+        dx = dout.clone()
+        dx[x <= 0] = 0
         #####################################################
         #                  END OF YOUR CODE                 #
         #####################################################
